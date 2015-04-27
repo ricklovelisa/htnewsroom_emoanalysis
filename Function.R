@@ -128,16 +128,17 @@ ClassifyEmotion <- function(dtm, algorithm="bayes", prior=1.0, verbose=FALSE, ..
 
 ## 还未修改完成 ##
 # 极性分析 #
-ClassifyPolarity <- function(dtm, file, algorithm="bayes", pstrong=0.5, pweak=1.0, prior=1.0, verbose=FALSE, ...) {
-  lexicon <- read.csv(system.file("data/subjectivity.csv.gz", package="sentiment"), header=FALSE)
+ClassifyPolarity <- function(dtm, algorithm="bayes", pstrong=0.5, pweak=1.0, prior=1.0, verbose=FALSE, ...) {
+  lexicon <- read.table("SentWords_PN.txt", header=T, stringsAsFactors = F, fileEncoding = "utf-8")
+  lexicon <- lexicon[lexicon[, 2] != 0, ]
   
   counts <- list(positive=length(which(lexicon[, 3]=="positive")), negative=length(which(lexicon[, 3]=="negative")), total=nrow(lexicon))
   documents <- c()
   
-  for (i in 1:nrow(matrix)) {
+  for (i in 1:nrow(dtm)) {
     if (verbose) print(paste("DOCUMENT", i))
     scores <- list(positive=0, negative=0)
-    doc <- matrix[i, ]
+    doc <- dtm[i, ]
     words <- findFreqTerms(doc, lowfreq=1)
     
     for (word in words) {
@@ -151,6 +152,7 @@ ClassifyPolarity <- function(dtm, file, algorithm="bayes", pstrong=0.5, pweak=1.
         
         score <- pweak
         if (polarity == "strongsubj") score <- pstrong
+        if (polarity == "midsubj") socre <- pmid
         if (algorithm=="bayes") score <- abs(log(score*prior/count))
         
         if (verbose) {

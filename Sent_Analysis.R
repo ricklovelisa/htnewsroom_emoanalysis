@@ -55,8 +55,11 @@ for (i in 1:length(corpus.both)){
 
 control.tf<-list(removePunctuation = T, stripWhitespace = T, wordLengths = c(2, 10))
 dtm.both <- DocumentTermMatrix(corpus.both, control.tf)
+dtm.both <- dtm.both[, -c(1:491)]
+dtm.both <- dtm.both[row_sums(dtm.both) > 0, ]
 
 emo <- ClassifyEmotion(dtm.both, "bayes", 1, T)
+PN <- ClassifyPolarity(dtm.both, 'bayes', verbose = T)
 
 
 
