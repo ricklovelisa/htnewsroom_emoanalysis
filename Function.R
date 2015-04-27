@@ -91,7 +91,7 @@ ClassifyEmotion <- function(dtm, algorithm="bayes", prior=1.0, verbose=FALSE, ..
           category <- as.character(entry[[2]])
           count <- counts[[category]]
           
-          score <- col_sums(matrix[, word])
+          score <- col_sums(dtm[i, word])
           if (algorithm=="bayes") score <- abs(score*log(prior/count))
           
           if (verbose) {
@@ -117,11 +117,11 @@ ClassifyEmotion <- function(dtm, algorithm="bayes", prior=1.0, verbose=FALSE, ..
     }
     
     best_fit <- names(scores)[which.max(unlist(scores))]
+    best_fit <- Index[grep(best_fit, Index[, 2]), 1]
     # if (best_fit == "disgust" && as.numeric(unlist(scores[2]))-3.09234 < .01) best_fit <- NA
     documents <- rbind(documents, best_fit)
   }
   
-  colnames(documents) <- c(Index$V1[match(names(scores), Index$V2)], "BEST_FIT")
   return(documents)
 }
 
